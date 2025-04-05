@@ -24,10 +24,19 @@ SECRET_KEY = 'django-insecure-*qf^r4%u*mak#76a==i*(!nkc__n239r^pw)dz^&56e4fd*$5!
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+CSRF_COOKIE_SECURE = True    # For HTTPS sites
+SESSION_COOKIE_SECURE = True  # Recommended with HTTPS
 ALLOWED_HOSTS = []
+CSP_DEFAULT_SRC = ["'self'"]
+CSP_SCRIPT_SRC = ["'self'"]
+CSP_STYLE_SRC = ["'self'", "'unsafe-inline'"]
 
-
+# Add these to settings.pySECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+ADMIN_URL = 'secret-admin/'  # Never use 'admin'
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'myapp',
     'admin_honeypot',
+   
 ]
 
 MIDDLEWARE = [
@@ -49,8 +59,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+     'myapp.security.middleware.WAFMiddleware',  # Add after SessionMiddleware
+     'django.middleware.csrf.CsrfViewMiddleware',
+     
 ]
-
 ROOT_URLCONF = 'bank_security.urls'
 
 TEMPLATES = [
@@ -100,8 +112,6 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
-
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
